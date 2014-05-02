@@ -9,11 +9,13 @@ What's that
 
 *django-redactorjs is a reusable application for Django, using WYSIWYG editor http://redactorjs.com/*
 
+**Package not compatible with previous version 0.2.x.**
+**Package not include redactor.js**
 Dependence
 -----------
 
 - `Django >= 1.3` # for static files
-- `PIL` # for image upload
+- `Pillow` or `PIL` # for image upload
 
 Getting started
 ---------------
@@ -30,9 +32,21 @@ Getting started
 * Add default config in settings.py (more settings see: <http://imperavi.com/redactor/docs/settings/>):
 
 ```
-JQUERY_URL = STATIC_URL + 'js/jquery.js'
 REDACTOR_OPTIONS = {'lang': 'ru'}
 REDACTOR_UPLOAD = 'uploads/'
+```
+
+Config for redactor static
+```
+REDACTOR_CSS = {
+    'all': (
+        'imperavi/css/redactor.css',)
+}
+REDACTOR_JS = [
+    'http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js',
+    'imperavi/js/redactor.js',
+    'imperavi/js/ru.js',
+]
 ```
 
 Using in model
