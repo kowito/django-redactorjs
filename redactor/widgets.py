@@ -6,7 +6,8 @@ from django.conf import settings
 
 
 GLOBAL_OPTIONS = getattr(settings, 'REDACTOR_OPTIONS', {})
-JQUERY_URL = getattr(settings, 'JQUERY_URL', None)
+REDACTOR_CSS = getattr(settings, 'REDACTOR_CSS', {})
+REDACTOR_JS = getattr(settings, 'REDACTOR_JS', [])
 
 INIT_JS = """<script type="text/javascript">
     (function($){
@@ -15,29 +16,17 @@ INIT_JS = """<script type="text/javascript">
     </script>
     """
 
-redactor_js = [
-    'redactor/redactor.min.js',
-]
-
-if JQUERY_URL:
-    redactor_js.insert(0, JQUERY_URL)
-
 
 class RedactorEditor(widgets.Textarea):
 
     class Media:
-        js = redactor_js
-
-        css = {
-            'all': (
-                'redactor/css/redactor.css',
-                'redactor/css/django_admin.css',
-            )
-        }
+        js = REDACTOR_JS
+        css = REDACTOR_CSS
 
     def __init__(self, *args, **kwargs):
         self.upload_to = kwargs.pop('upload_to', '')
         self.custom_options = kwargs.pop('redactor_options', {})
+        self.Media.css['all'] = self.Media.css['all'] + ('redactor/css/django_admin.css',)
         super(RedactorEditor, self).__init__(*args, **kwargs)
 
     def get_options(self):
@@ -55,7 +44,3 @@ class RedactorEditor(widgets.Textarea):
         id_ = final_attrs.get('id')
         html += INIT_JS % (id_, self.get_options())
         return mark_safe(html)
-
-
-# For backward compatibility
-JQueryEditor = RedactorEditor
