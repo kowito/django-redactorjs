@@ -49,6 +49,17 @@ REDACTOR_JS = [
 ]
 ```
 
+You can also specify a function to modify the filename of uploaded files (for example to ensure the filename is unique).
+```
+import uuid
+def make_unique_filename(filename):
+    ext = filename.split('.')[-1]
+    return "%s.%s" % (uuid.uuid4(), ext)
+
+REDACTOR_GENERATE_FILENAME = make_unique_filename
+
+```
+
 Using in model
 --------------
 

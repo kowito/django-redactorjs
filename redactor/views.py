@@ -10,7 +10,12 @@ from django.views.decorators.http import require_POST
 from redactor.forms import ImageForm
 
 
+def default_generate_filename(filename):
+    return filename
+
+
 UPLOAD_PATH = getattr(settings, 'REDACTOR_UPLOAD', 'redactor/')
+GENERATE_FILENAME = getattr(settings, 'REDACTOR_GENERATE_FILENAME', default_generate_filename)
 
 
 @csrf_exempt
@@ -20,7 +25,7 @@ def redactor_upload(request, upload_to=None, form_class=ImageForm, response=lamb
     form = form_class(request.POST, request.FILES)
     if form.is_valid():
         file_ = form.cleaned_data['file']
-        path = os.path.join(upload_to or UPLOAD_PATH, file_.name)
+        path = os.path.join(upload_to or UPLOAD_PATH, GENERATE_FILENAME(file_.name))
         real_path = default_storage.save(path, file_)
         return HttpResponse(
             response(file_.name, default_storage.url(real_path))
