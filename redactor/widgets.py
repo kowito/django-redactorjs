@@ -26,16 +26,19 @@ class RedactorEditor(widgets.Textarea):
     def __init__(self, *args, **kwargs):
         self.upload_to = kwargs.pop('upload_to', '')
         self.custom_options = kwargs.pop('redactor_options', {})
-        self.Media.css['all'] = self.Media.css['all'] + ('redactor/css/django_admin.css',)
+        self.Media.css['all'] = self.Media.css.get('all', ()) + ('redactor/css/django_admin.css',)
         super(RedactorEditor, self).__init__(*args, **kwargs)
+
+    def get_upload_params(self):
+        kwargs = {'upload_to': self.upload_to}
+        return {
+            'imageUpload': reverse('redactor_upload_image', kwargs=kwargs),
+            'fileUpload': reverse('redactor_upload_file', kwargs=kwargs)}
 
     def get_options(self):
         options = GLOBAL_OPTIONS.copy()
+        options.update(self.get_upload_params())
         options.update(self.custom_options)
-        options.update({
-            'imageUpload': reverse('redactor_upload_image', kwargs={'upload_to': self.upload_to}),
-            'fileUpload': reverse('redactor_upload_file', kwargs={'upload_to': self.upload_to})
-        })
         return json.dumps(options)
 
     def render(self, name, value, attrs=None):
